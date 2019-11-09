@@ -1,6 +1,6 @@
 import numpy as np
 import nibabel as nib
-from utils.nifti import load, save
+from .nifti import load, save
 
 
 def flip_lr(input_path, output_path):

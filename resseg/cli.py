@@ -30,6 +30,14 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 )
 def main(input_path, output_path, window_size, window_border, batch_size):
     """Console script for resseg."""
+    """
+    For now, the image is assumed to have been preprocessed:
+    1) Reg to MNI, RAS 1 mm iso
+    2) Brain segmented
+    3) Bias correction
+    4) Histogram standardization
+    5) Z-normalization
+    """
     from resseg import resseg
     resseg(
         input_path,

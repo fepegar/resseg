@@ -17,7 +17,12 @@ def resseg(*args, pretrained=False, **kwargs):
         url = '{}/{}_epoch_190_state_dict-4e20e838.pth'.format(repo_dir, time)
         state_dict = torch.hub.load_state_dict_from_url(
             url, progress=False, map_location='cpu')
-        model.load_state_dict(state_dict)
+        try:
+            model.load_state_dict(state_dict)
+        except RuntimeError:  # trained using DataParallel?
+            # See https://discuss.pytorch.org/t/missing-keys-unexpected-keys-in-state-dict-when-loading-self-trained-model/22379/3
+            model = nn.DataParallel(model)
+            model.load_state_dict(state_dict)
     else:
         model = UNet3D(*args, **kwargs)
     return model
