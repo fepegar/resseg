@@ -4,15 +4,43 @@
 import sys
 import click
 
+INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=False)
+OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 
 @click.command()
-def main(args=None):
+@click.argument('input-path', type=INPUT_FILE_TYPE)
+@click.argument('output-path', type=OUTPUT_FILE_TYPE)
+@click.option(
+    '--window_size', '-w',
+    type=int,
+    default=128,
+    show_default=True,
+)
+@click.option(
+    '--window_border', '-c',
+    type=int,
+    default=1,
+    show_default=True,
+)
+@click.option(
+    '--batch_size', '-b',
+    type=int,
+    default=1,
+    show_default=True,
+)
+def main(input_path, output_path, window_size, window_border, batch_size):
     """Console script for resseg."""
-    click.echo("Replace this message by putting your code into "
-               "resseg.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
+    from resseg import resseg
+    resseg(
+        input_path,
+        output_path,
+        window_size,
+        window_border,
+        batch_size,
+    )
     return 0
 
 
 if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
     sys.exit(main())  # pragma: no cover

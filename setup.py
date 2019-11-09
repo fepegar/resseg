@@ -13,11 +13,19 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=7.0',
+    'numpy',
+    'torch>=1.1',
+    'tqdm',
+    'unet',
 ]
 
 setup_requirements = []
 
 test_requirements = []
+
+dependency_links = [
+    'git+https://github.com/fepegar/utils#egg=utils'
+]
 
 setup(
     author="Fernando Perez-Garcia",
@@ -31,6 +39,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
+    dependency_links=dependency_links,
     description="Automatic segmentation of epilepsy neurosurgery resection cavity.",
     entry_points={
         'console_scripts': [
