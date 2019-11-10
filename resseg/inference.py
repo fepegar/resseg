@@ -80,7 +80,8 @@ def run_inference(
     window_size = to_tuple(window_size)
     window_border = to_tuple(window_border)
 
-    sampler = GridSampler(image_path, window_size, window_border)
+    sampler = GridSampler(
+        image_path, window_size, window_border, dtype=np.float32)
     aggregator = GridAggregator(image_path, window_border)
     loader = DataLoader(sampler, batch_size=batch_size)
 

@@ -7,8 +7,10 @@ class GridSampler(Dataset):
     """
     Adapted from NiftyNet
     """
-    def __init__(self, image_path, window_size, border):
+    def __init__(self, image_path, window_size, border, dtype=None):
         self.array = np.array(nib.load(str(image_path)).get_data())
+        if dtype is not None:
+            self.array = self.array.astype(dtype)
         self.locations = self.grid_spatial_coordinates(
             self.array,
             window_size,
