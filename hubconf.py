@@ -4,6 +4,7 @@ import json
 import inspect
 import urllib.request
 import torch
+import torch.nn as nn
 from unet import UNet3D
 
 
@@ -19,7 +20,8 @@ def resseg(*args, pretrained=False, **kwargs):
             url, progress=False, map_location='cpu')
         try:
             model.load_state_dict(state_dict)
-        except RuntimeError:  # trained using DataParallel?
+        except RuntimeError as e:  # trained using DataParallel?
+            print('Using nn.DataParallel...')
             # See https://discuss.pytorch.org/t/missing-keys-unexpected-keys-in-state-dict-when-loading-self-trained-model/22379/3
             model = nn.DataParallel(model)
             model.load_state_dict(state_dict)
