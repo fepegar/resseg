@@ -1,5 +1,6 @@
 import numpy as np
 import nibabel as nib
+import SimpleITK as sitk
 from .nifti import load, save
 
 
@@ -23,3 +24,11 @@ def binarize_probabilities(input_path, output_path):
     data = nii.get_data() > 0.5
     data = data.astype(np.uint8)
     save(data, affine=nii.affine, path=output_path)
+
+
+def keep_largest_cc(input_path, output_path):
+    image = sitk.ReadImage(str(input_path))
+    connected_components = sitk.ConnectedComponent(image)
+    labeled_cc = sitk.RelabelComponent(connected_components)
+    largest_cc = labeled_cc == 1
+    sitk.WriteImage(largest_cc, str(output_path))

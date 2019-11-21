@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 
 from .grid_sampler import GridSampler
 from .grid_aggregator import GridAggregator
-from .postprocessing import binarize_probabilities, flip_lr, mean_image
+from .postprocessing import binarize_probabilities, flip_lr, mean_image, keep_largest_cc
 
 
 def to_tuple(value, n=3):
@@ -48,6 +48,7 @@ def segment_resection(
         flip=True,
         binarize=True,
         whole_image=False,
+        postprocess=True,
         ):
 
     run_inference(
@@ -59,6 +60,7 @@ def segment_resection(
         batch_size=batch_size,
         show_progress=show_progress,
         whole_image=whole_image,
+        postprocess=postprocess,
     )
 
     if flip:
@@ -74,6 +76,7 @@ def segment_resection(
                     batch_size=batch_size,
                     show_progress=show_progress,
                     whole_image=whole_image,
+                    postprocess=postprocess,
                 )
             flip_lr(output_temp.name, output_temp.name)
             paths = output_path, output_temp.name
@@ -92,6 +95,7 @@ def run_inference(
         batch_size=None,
         show_progress=True,
         whole_image=False,
+        postprocess=True,
         ):
 
     if whole_image:
@@ -149,3 +153,6 @@ def run_inference(
             output_path,
             output_probabilities=True,
         )
+
+    if postprocess:
+        keep_largest_cc(output_path, output_path)

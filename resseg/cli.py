@@ -33,7 +33,12 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
     default=False,
     show_default=True,
 )
-def main(input_path, output_path, window_size, window_border, batch_size, whole_image):
+@click.option(
+    '--postprocess/--raw',
+    default=True,
+    show_default=True,
+)
+def main(input_path, output_path, window_size, window_border, batch_size, whole_image, postprocess):
     """Console script for resseg."""
     """
     For now, the image is assumed to have been preprocessed:
@@ -51,6 +56,7 @@ def main(input_path, output_path, window_size, window_border, batch_size, whole_
         window_border,
         batch_size,
         whole_image=whole_image,
+        postprocess=postprocess,
     )
     return 0
 
