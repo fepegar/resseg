@@ -98,7 +98,6 @@ def run_inference(
         batch_size=None,
         show_progress=True,
         whole_image=False,
-        postprocess=True,
         ):
 
     if whole_image:
