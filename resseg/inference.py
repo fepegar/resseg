@@ -85,6 +85,9 @@ def segment_resection(
     if binarize:
         binarize_probabilities(output_path, output_path)
 
+    if postprocess:
+        keep_largest_cc(output_path, output_path)
+
 
 def run_inference(
         image_path,
@@ -153,6 +156,3 @@ def run_inference(
             output_path,
             output_probabilities=True,
         )
-
-    if postprocess:
-        keep_largest_cc(output_path, output_path)
