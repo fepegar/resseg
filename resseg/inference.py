@@ -60,7 +60,6 @@ def segment_resection(
         batch_size=batch_size,
         show_progress=show_progress,
         whole_image=whole_image,
-        postprocess=postprocess,
     )
 
     if flip:
@@ -76,7 +75,6 @@ def segment_resection(
                     batch_size=batch_size,
                     show_progress=show_progress,
                     whole_image=whole_image,
-                    postprocess=postprocess,
                 )
             flip_lr(output_temp.name, output_temp.name)
             paths = output_path, output_temp.name
