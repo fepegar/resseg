@@ -15,6 +15,7 @@ requirements = [
     'Click>=7.0',
     'nibabel',
     'numpy',
+    'SimpleITK',
     'torch>=1.1',
     'tqdm',
     'unet',
