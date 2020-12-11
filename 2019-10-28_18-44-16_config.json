@@ -28,7 +28,7 @@
   "optimizer_name": "Adam",
   "out_channels_first_layer": 8,
   "padding": true,
-  "padding_mode": "reflection",
+  "padding_mode": "reflect",
   "patience": 20,
   "percentage_cores": 100,
   "pooling_type": "max",
