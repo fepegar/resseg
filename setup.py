@@ -35,7 +35,7 @@ setup(
     description="Automatic segmentation of epilepsy neurosurgery resection cavity.",
     entry_points={
         'console_scripts': [
-            'resseg=resseg.cli:main',
+            'resseg=resseg.cli.resseg:main',
         ],
     },
     install_requires=requirements,
