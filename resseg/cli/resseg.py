@@ -4,6 +4,7 @@
 import sys
 import click
 
+
 INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=False)
 OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 

@@ -13,13 +13,9 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'click',
-    'nibabel',
     'torchio',
-    'torch',
-    'tqdm',
     'unet',
 ]
-
 
 setup(
     author="Fernando Perez-Garcia",
