@@ -3,15 +3,15 @@
 """Main module."""
 
 import torch
-from .inference import segment_resection
+from resseg.inference import segment_resection
 
 
 def resseg(
         input_path,
         output_path,
-        iterations,
+        tta_iterations,
+        interpolation,
         num_workers,
-        batch_size,
         postprocess=True,
         ):
     repo = 'fepegar/resseg'
@@ -20,9 +20,9 @@ def resseg(
     segment_resection(
         input_path,
         model,
-        output_path,
-        iterations,
-        num_workers,
-        batch_size,
+        output_path=output_path,
+        tta_iterations=tta_iterations,
+        interpolation=interpolation,
+        num_workers=num_workers,
         postprocess=postprocess,
     )

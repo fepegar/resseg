@@ -22,8 +22,8 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 )
 @click.option(
     '--interpolation', '-i',
-    type=int,
-    default=6,
+    type=str,
+    default='bspline',
     show_default=True,
 )
 @click.option(
@@ -33,15 +33,13 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
     show_default=True,
 )
 @click.option(
-    '--batch_size', '-b',
-    type=int,
-    default=1,
-    show_default=True,
-)
-@click.option(
     '--postprocess/--raw',
     default=True,
     show_default=True,
+)
+@click.option(
+    '--seed', '-s',
+    type=int,
 )
 def main(
         input_path,
@@ -49,18 +47,20 @@ def main(
         tta_iterations,
         interpolation,
         num_workers,
-        batch_size,
         postprocess,
+        seed,
         ):
     """Console script for resseg."""
     from resseg import resseg
+    if seed is not None:
+        import torch
+        torch.manual_seed(seed)
     resseg(
         input_path,
         output_path,
         tta_iterations,
-        interpolation
+        interpolation,
         num_workers,
-        batch_size,
         postprocess=postprocess,
     )
     return 0
