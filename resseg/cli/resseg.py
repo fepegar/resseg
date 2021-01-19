@@ -5,8 +5,8 @@ import sys
 import click
 
 
-INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=False)
-OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
+INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=True)
+OUTPUT_FILE_TYPE = click.Path(dir_okay=True)
 
 @click.command()
 @click.argument('input-path', type=INPUT_FILE_TYPE)
@@ -31,7 +31,7 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 )
 @click.option(
     '--whole-image/--patch-based',
-    default=False,
+    default=True,
     show_default=True,
 )
 @click.option(
@@ -39,16 +39,16 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
     default=True,
     show_default=True,
 )
-def main(input_path, output_path, window_size, window_border, batch_size, whole_image, postprocess):
+def main(
+        input_path,
+        output_path,
+        window_size,
+        window_border,
+        batch_size,
+        whole_image,
+        postprocess,
+        ):
     """Console script for resseg."""
-    """
-    For now, the image is assumed to have been preprocessed:
-    1) Reg to MNI, RAS 1 mm iso
-    2) Brain segmented
-    3) Bias correction
-    4) Histogram standardization
-    5) Z-normalization
-    """
     from resseg import resseg
     resseg(
         input_path,
