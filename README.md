@@ -1,13 +1,9 @@
-======
-resseg
-======
-
-
-.. image:: https://img.shields.io/pypi/v/resseg.svg
-        :target: https://pypi.python.org/pypi/resseg
-
-.. image:: https://img.shields.io/travis/fepegar/resseg.svg
-        :target: https://travis-ci.org/fepegar/resseg
-
+# RESSEG
 
 Automatic segmentation of postoperative brain resection cavities.
+
+```shell
+$ pip install resseg
+$ IMAGE_PATH=`resseg-download`
+$ resseg $IMAGE_PATH
+```

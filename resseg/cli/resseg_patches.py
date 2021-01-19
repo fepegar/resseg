@@ -5,37 +5,33 @@ import sys
 import click
 
 
-INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=False)
-OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
+INPUT_FILE_TYPE = click.Path(exists=True, dir_okay=True)
+OUTPUT_FILE_TYPE = click.Path(dir_okay=True)
 
 @click.command()
 @click.argument('input-path', type=INPUT_FILE_TYPE)
+@click.argument('output-path', type=OUTPUT_FILE_TYPE)
 @click.option(
-    '--output-path', '-o',
-    type=OUTPUT_FILE_TYPE,
-)
-@click.option(
-    '--tta-iterations', '-a',
+    '--window_size', '-w',
     type=int,
-    default=6,
+    default=128,
     show_default=True,
 )
 @click.option(
-    '--interpolation', '-i',
+    '--window_border', '-c',
     type=int,
-    default=6,
-    show_default=True,
-)
-@click.option(
-    '--num_workers', '-j',
-    type=int,
-    default=0,
+    default=1,
     show_default=True,
 )
 @click.option(
     '--batch_size', '-b',
     type=int,
     default=1,
+    show_default=True,
+)
+@click.option(
+    '--whole-image/--patch-based',
+    default=True,
     show_default=True,
 )
 @click.option(
@@ -46,10 +42,10 @@ OUTPUT_FILE_TYPE = click.Path(dir_okay=False)
 def main(
         input_path,
         output_path,
-        tta_iterations,
-        interpolation,
-        num_workers,
+        window_size,
+        window_border,
         batch_size,
+        whole_image,
         postprocess,
         ):
     """Console script for resseg."""
@@ -57,10 +53,10 @@ def main(
     resseg(
         input_path,
         output_path,
-        tta_iterations,
-        interpolation
-        num_workers,
+        window_size,
+        window_border,
         batch_size,
+        whole_image=whole_image,
         postprocess=postprocess,
     )
     return 0

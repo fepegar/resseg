@@ -1,155 +1,99 @@
-from tempfile import NamedTemporaryFile
+import warnings
 
+import torch
 import numpy as np
 import nibabel as nib
+import torchio as tio
 from tqdm import tqdm
-import torch
-from torch.utils.data import DataLoader
 
-from .grid_sampler import GridSampler
-from .grid_aggregator import GridAggregator
-from .postprocessing import binarize_probabilities, flip_lr, mean_image, keep_largest_cc
+import resseg.utils
 
 
-def to_tuple(value, n=3):
-    if isinstance(value, str):
-        split = value.split(',')
-        value = int(split[0]) if len(split) == 1 else tuple(int(n) for n in split)
-    try:
-        iter(value)
-    except TypeError:
-        value = n * (value,)
-    return value
-
-
-def get_device():
-    # pylint: disable=no-member
-    return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-def pad_divisible(array, n):
-    shape = np.array(array.shape)
-    mod = shape % n
-    pad = n - mod
-    zeros = 0, 0, 0
-    pad_width = list(zip(zeros, pad))
-    array = np.pad(array, pad_width)
-    return array
+IMAGE_NAME = 'image'
 
 
 def segment_resection(
         input_path,
         model,
-        window_size,
-        window_border,
         output_path,
-        batch_size=None,
+        tta_iterations,
+        interpolation='bspline',
+        num_workers=0,
         show_progress=True,
-        flip=True,
         binarize=True,
-        whole_image=False,
-        postprocess=True,
+        postprocess=True,  # ignore for now
         ):
+    dataset = get_dataset(input_path, tta_iterations, interpolation)
 
-    run_inference(
-        input_path,
-        model,
-        output_path=output_path,
-        window_size=window_size,
-        window_border=window_border,
-        batch_size=batch_size,
-        show_progress=show_progress,
-        whole_image=whole_image,
-    )
-
-    if flip:
-        with NamedTemporaryFile(suffix='.nii') as output_temp:
-            with NamedTemporaryFile(suffix='.nii') as input_temp:
-                flip_lr(input_path, input_temp.name)
-                run_inference(
-                    input_temp.name,
-                    model,
-                    output_path=output_temp.name,
-                    window_size=window_size,
-                    window_border=window_border,
-                    batch_size=batch_size,
-                    show_progress=show_progress,
-                    whole_image=whole_image,
-                )
-            flip_lr(output_temp.name, output_temp.name)
-            paths = output_path, output_temp.name
-            mean_image(paths, output_path)
-
-    if binarize:
-        binarize_probabilities(output_path, output_path)
-
-    if postprocess:
-        keep_largest_cc(output_path, output_path)
-
-
-def run_inference(
-        image_path,
-        model,
-        output_path,
-        window_size,
-        window_border=None,
-        batch_size=None,
-        show_progress=True,
-        whole_image=False,
-        ):
-
-    if whole_image:
-        nii = nib.load(str(image_path))
-        array = nii.get_data()
-        array = pad_divisible(array, 8)  # HARDCODE UNET 3 LEVELS
-        batch_image = array[np.newaxis, np.newaxis, ...].astype(np.float32)
-        batch_image = torch.from_numpy(batch_image)
-        batch = dict(
-            image=batch_image,
-        )
-        batches = [batch]
-    else:
-        window_border = 1 if window_border is None else window_border
-        batch_size = 1 if batch_size is None else batch_size
-        window_size = to_tuple(window_size)
-        window_border = to_tuple(window_border)
-
-        sampler = GridSampler(
-            image_path, window_size, window_border, dtype=np.float32)
-        aggregator = GridAggregator(image_path, window_border)
-        batches = DataLoader(sampler, batch_size=batch_size)
-
-    device = get_device()
-    print('Using device', device)
-
+    device = resseg.utils.get_device()
     model.to(device)
     model.eval()
-
-    with torch.no_grad():
-        progress = tqdm(batches) if show_progress else batches
-        for batch in progress:
-            input_tensor = batch['image'].to(device)
-            logits = model(input_tensor)
-            probabilities = logits.softmax(dim=1)
-            foreground = probabilities[:, 1:, ...]
-            outputs = foreground
-            if not whole_image:
-                locations = batch['location']
-                aggregator.add_batch(outputs, locations)
-
-    if whole_image:
-        array = outputs.cpu().numpy().squeeze()
-
-        # In case it was padded
-        si, sj, sk = nii.shape
-        array = array[:si, :sj, :sk]
-
-        output_nii = nib.Nifti1Image(array, nii.affine)
-        output_nii.header['qform_code'] = 1
-        output_nii.header['sform_code'] = 0
-        output_nii.to_filename(str(output_path))
+    torch.set_grad_enabled(False)
+    loader = torch.utils.data.DataLoader(
+        dataset,
+        num_workers=num_workers,
+        collate_fn=lambda x: x,
+    )
+    all_results = []
+    for subjects_list_batch in tqdm(loader, disable=not show_progress):
+        subjects = batch[IMAGE_NAME][tio.DATA].to(device)
+        tensors = [subject[IMAGE_NAME][tio.DATA] for subject in subjects_list_batch]
+        inputs = torch.stack(tensors).float().to(device)
+        with torch.cuda.amp.autocast():
+            try:
+                probs = model(inputs).softmax(dim=1)[:, 1:]  # discard background
+            except Exception as e:
+                print(e)
+                raise
+        iterable = list(zip(subjects_list_batch, probs))
+        for subject, prob in tqdm(iterable, leave=False, unit='subject'):
+            subject.image.set_data(prob)
+            subject_back = subject.apply_inverse_transform(warn=False, image_interpolation='linear')
+            all_results.append(subject_back.image.data)
+    result = torch.stack(all_results)
+    mean_prob = result.mean(dim=0)
+    if binarize:
+        mean_prob = (mean_prob >= 0.5).byte()
+        class_ = tio.LabelMap
     else:
-        aggregator.save_current_image(
-            output_path,
-            output_probabilities=True,
+        class_ = tio.ScalarImage
+    image = class_(tensor=mean_prob, affine=subject_back[IMAGE_NAME].affine)
+    resample = tio.Resample(input_path, image_interpolation=interpolation)
+    image_native = resample(image)
+    image_native.save(output_path)
+
+
+def get_dataset(input_path, tta_iterations, interpolation, tolerance=0.1):
+    subject = tio.Subject({IMAGE_NAME: tio.ScalarImage(input_path)})
+    zooms = nib.load(input_path).header.get_zooms()
+    pixdim = np.array(zooms)
+    diff_to_1_iso = np.abs(pixdim - 1)
+    resample = False
+    if np.any(diff_to_1_iso > tolerance):
+        message = (
+            f'Pixel spacing is too far from 1 mm isotropic: {zooms}.'
+            'Images will be resampled before inference.'
         )
+        warnings.warn(message)
+        resample = True
+    preprocess_transforms = [
+        tio.ToCanonical(),
+        tio.ZNormalization(masking_method=tio.ZNormalization.mean),
+    ]
+    if resample:
+        resample_transform = tio.Resample(image_interpolation=interpolation)
+        preprocess_transforms.append(resample_transform)
+    preprocess_transform = tio.Compose(preprocess_transforms)
+    no_aug_dataset = tio.SubjectsDataset([subject], transform=preprocess_transform)
+
+    aug_subjects = tta_iterations * [subject]
+    if not aug_subjects:
+        return no_aug_dataset
+    augment_transform = tio.Compose((
+        preprocess_transform,
+        tio.RandomFlip(),
+        tio.RandomAffine(image_interpolation=interpolation),
+    ))
+    aug_dataset = tio.SubjectsDataset(aug_subjects, transform=augment_transform)
+    dataset = torch.utils.data.ConcatDataset((no_aug_dataset, augment_transform))
+    return dataset
