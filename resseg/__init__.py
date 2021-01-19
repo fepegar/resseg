@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Top-level package for resseg."""
 
 __author__ = """Fernando Perez-Garcia"""
@@ -8,4 +6,4 @@ __version__ = '0.2.1'
 
 from .resseg import resseg
 
-WEIGHTS_URL = ''
+WEIGHTS_URL = 'https://github.com/fepegar/resseg/raw/master/self_semi_37-b571f7ba.pth'
