@@ -7,3 +7,5 @@ __email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
 __version__ = '0.2.1'
 
 from .resseg import resseg
+
+WEIGHTS_URL = ''
