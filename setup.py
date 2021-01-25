@@ -10,7 +10,7 @@ with open('README.md') as readme_file:
 
 requirements = [
     'click',
-    'torch>=1.6'
+    'torch>=1.6',
     'torchio',
     'torchvision',
     'unet',
