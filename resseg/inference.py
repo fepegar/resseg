@@ -12,6 +12,7 @@ from resseg.postprocessing import keep_largest_cc
 
 
 IMAGE_NAME = 'image'
+AFFINE_NAME = 'to_mni'
 
 
 def segment_resection(
@@ -23,9 +24,15 @@ def segment_resection(
         num_workers=0,
         show_progress=True,
         binarize=True,
-        postprocess=True,  # ignore for now
+        postprocess=True,
+        mni_transform_path=None,
         ):
-    dataset = get_dataset(input_path, tta_iterations, interpolation)
+    dataset = get_dataset(
+        input_path,
+        tta_iterations,
+        interpolation,
+        mni_transform_path=mni_transform_path,
+    )
 
     device = resseg.utils.get_device()
     model.to(device)
@@ -72,17 +79,40 @@ def segment_resection(
     image_native.save(output_path)
 
 
-def get_dataset(input_path, tta_iterations, interpolation, tolerance=0.1):
-    subject = tio.Subject({IMAGE_NAME: tio.ScalarImage(input_path)})
+def get_dataset(
+        input_path,
+        tta_iterations,
+        interpolation,
+        tolerance=0.1,
+        mni_transform_path=None,
+        ):
+    if mni_transform_path is None:
+        image = tio.ScalarImage(input_path)
+    else:
+        affine = tio.io.read_matrix(mni_transform_path)
+        image = tio.ScalarImage(input_path, **{AFFINE_NAME: affine})
+    subject = tio.Subject({IMAGE_NAME: image})
+    landmarks = np.array([
+            0.        ,   0.31331614,   0.61505419,   0.76732501,
+            0.98887953,   1.71169384,   3.21741126,  13.06931455,
+           32.70817796,  40.87807389,  47.83508873,  63.4408591 ,
+          100.
+    ])
+    hist_std = tio.HistogramStandardization({IMAGE_NAME: landmarks})
     preprocess_transforms = [
         tio.ToCanonical(),
+        hist_std,
         tio.ZNormalization(masking_method=tio.ZNormalization.mean),
     ]
     zooms = nib.load(input_path).header.get_zooms()
     pixdim = np.array(zooms)
     diff_to_1_iso = np.abs(pixdim - 1)
-    if np.any(diff_to_1_iso > tolerance):
-        resample_transform = tio.Resample(image_interpolation=interpolation)
+    if np.any(diff_to_1_iso > tolerance) or mni_transform_path is not None:
+        kwargs = {'image_interpolation': interpolation}
+        if mni_transform_path is not None:
+            kwargs['pre_affine_name'] = AFFINE_NAME
+            kwargs['target'] = tio.datasets.Colin27().t1.path
+        resample_transform = tio.Resample(**kwargs)
         preprocess_transforms.append(resample_transform)
     preprocess_transforms.append(tio.EnsureShapeMultiple(8, method='crop'))
     preprocess_transform = tio.Compose(preprocess_transforms)

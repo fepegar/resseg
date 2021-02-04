@@ -13,6 +13,7 @@ def resseg(
         interpolation,
         num_workers,
         postprocess=True,
+        mni_transform_path=None,
         ):
     repo = 'fepegar/resseg'
     model_name = 'ressegnet'
@@ -25,4 +26,5 @@ def resseg(
         interpolation=interpolation,
         num_workers=num_workers,
         postprocess=postprocess,
+        mni_transform_path=mni_transform_path,
     )
