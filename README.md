@@ -1,6 +1,6 @@
 # RESSEG
 
-Automatic segmentation of postoperative brain resection cavities.
+Automatic segmentation of postoperative brain resection cavities from magnetic resonance images (MRI) using a convolutional neural network (CNN) trained with [PyTorch](https://pytorch.org/) 1.7.1.
 
 ## Installation
 
@@ -53,3 +53,8 @@ If you use this library for your research, please cite our MICCAI 2020 paper:
 And the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1), which was used to train the model:
 
 [Pérez-García, Fernando; Rodionov, Roman; Alim-Marvasti, Ali; Sparks, Rachel; Duncan, John; Ourselin, Sebastien (2020): *EPISURG: a dataset of postoperative magnetic resonance images (MRI) for quantitative analysis of resection neurosurgery for refractory epilepsy*. University College London. Dataset. https://doi.org/10.5522/04/9996158.v1](https://doi.org/10.5522/04/9996158.v1)
+
+## See also
+
+- [`resector`](https://github.com/fepegar/resector) was used to simulate brain resections during training
+- [TorchIO](http://torchio.rtfd.io/) was also used extensively. Both `resseg` and `resector` require this library.
