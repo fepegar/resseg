@@ -22,8 +22,8 @@ def main(input_path, transform_path, resampled_image_path):
     try:
         import ants
     except ImportError as e:
-        print('Install ANTS for registration:\npip install antspyx')
-        raise
+        message = 'Install ANTS for registration:\npip install antspyx'
+        raise ModuleNotFoundError(message) from e
     import numpy as np
     import torchio as tio
     reference = ants.image_read(str(tio.datasets.Colin27().t1.path))
