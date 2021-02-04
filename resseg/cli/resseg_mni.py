@@ -22,7 +22,7 @@ def main(input_path, transform_path, resampled_image_path):
     try:
         import ants
     except ImportError as e:
-        message = 'Install ANTS for registration:\npip install antspyx'
+        message = 'Install ANTS for registration: pip install antspyx'
         raise ModuleNotFoundError(message) from e
     import numpy as np
     import torchio as tio
