@@ -31,6 +31,7 @@ setup(
     entry_points={
         'console_scripts': [
             'resseg=resseg.cli.resseg:main',
+            'resseg-mni=resseg.cli.resseg_mni:main',
         ],
     },
     install_requires=requirements,
