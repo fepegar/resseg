@@ -13,7 +13,7 @@ requirements = [
     'torch>=1.6',
     'torchio',
     'torchvision',
-    'unet',
+    'unet==0.7.7',
 ]
 
 setup(

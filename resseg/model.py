@@ -1,6 +1,8 @@
 from unet import UNet
 from torchvision.models.utils import load_state_dict_from_url
-from . import WEIGHTS_URL
+
+
+WEIGHTS_URL = 'https://github.com/fepegar/resseg/raw/master/self_semi_37-b571f7ba.pth'
 
 
 def ressegnet(pretrained: bool = True, progress: bool = True):
