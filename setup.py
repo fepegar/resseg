@@ -32,6 +32,7 @@ setup(
         'console_scripts': [
             'resseg=resseg.cli.resseg:main',
             'resseg-mni=resseg.cli.resseg_mni:main',
+            'resseg-download=resseg.cli.resseg_download:main',
         ],
     },
     install_requires=requirements,
