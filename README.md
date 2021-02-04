@@ -42,6 +42,23 @@ resseg $EPISURG -o episurg_seg.nii.gz -t episurg_to_mni.tfm
 
 ![Resection cavity segmented on an image from EPISURG](screenshots/episurg.png)
 
+## Trained model
+
+The trained model can be used without installing `resseg`, but you'll need to install `unet` first:
+
+```shell
+pip install unet==0.7.7
+```
+
+Then, in Python:
+
+```python
+import torch
+repo = 'fepegar/resseg'
+model_name = 'ressegnet'
+model = torch.hub.load(repo, model_name, pretrained=True)
+```
+
 ## Credit
 
 If you use this library for your research, please cite our MICCAI 2020 paper:
