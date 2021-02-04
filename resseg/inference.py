@@ -8,11 +8,11 @@ import torchio as tio
 from tqdm import tqdm
 
 import resseg.utils
-from resseg.postprocessing import keep_largest_cc
 
 
 IMAGE_NAME = 'image'
-AFFINE_NAME = 'to_mni'
+TO_MNI = 'to_mni'
+FROM_MNI = 'from_mni'
 
 
 def segment_resection(
@@ -65,10 +65,23 @@ def segment_resection(
         class_ = tio.LabelMap
     else:
         class_ = tio.ScalarImage
-    image = class_(tensor=mean_prob, affine=subject_back[IMAGE_NAME].affine)
+    image_kwargs = {
+        'tensor': mean_prob,
+        'affine': subject_back[IMAGE_NAME].affine,
+    }
+    resample_kwargs = {
+        'target': input_path,
+        'image_interpolation': interpolation,
+    }
+    if mni_transform_path is not None:
+        to_mni = tio.io.read_matrix(mni_transform_path)
+        from_mni = np.linalg.inv(to_mni)
+        image_kwargs[FROM_MNI] = from_mni
+        resample_kwargs['pre_affine_name'] = FROM_MNI
+    image = class_(**image_kwargs)
     if postprocess:
-        keep_largest_cc(image)
-    resample = tio.Resample(input_path, image_interpolation=interpolation)
+        image = tio.KeepLargestComponent()(image)
+    resample = tio.Resample(**resample_kwargs)
     image_native = resample(image)
     if output_path is None:
         input_path = Path(input_path)
@@ -90,7 +103,7 @@ def get_dataset(
         image = tio.ScalarImage(input_path)
     else:
         affine = tio.io.read_matrix(mni_transform_path)
-        image = tio.ScalarImage(input_path, **{AFFINE_NAME: affine})
+        image = tio.ScalarImage(input_path, **{TO_MNI: affine})
     subject = tio.Subject({IMAGE_NAME: image})
     landmarks = np.array([
             0.        ,   0.31331614,   0.61505419,   0.76732501,
@@ -110,7 +123,7 @@ def get_dataset(
     if np.any(diff_to_1_iso > tolerance) or mni_transform_path is not None:
         kwargs = {'image_interpolation': interpolation}
         if mni_transform_path is not None:
-            kwargs['pre_affine_name'] = AFFINE_NAME
+            kwargs['pre_affine_name'] = TO_MNI
             kwargs['target'] = tio.datasets.Colin27().t1.path
         resample_transform = tio.Resample(**kwargs)
         preprocess_transforms.append(resample_transform)
