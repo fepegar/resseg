@@ -33,6 +33,7 @@ setup(
             'resseg=resseg.cli.resseg:main',
             'resseg-mni=resseg.cli.resseg_mni:main',
             'resseg-download=resseg.cli.resseg_download:main',
+            'resseg-features=resseg.cli.resseg_feature_maps:main',
         ],
     },
     install_requires=requirements,

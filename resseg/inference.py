@@ -7,7 +7,7 @@ import nibabel as nib
 import torchio as tio
 from tqdm import tqdm
 
-import resseg.utils
+from .utils import get_device
 
 
 IMAGE_NAME = 'image'
@@ -34,7 +34,7 @@ def segment_resection(
         mni_transform_path=mni_transform_path,
     )
 
-    device = resseg.utils.get_device()
+    device = get_device()
     model.to(device)
     model.eval()
     torch.set_grad_enabled(False)
@@ -94,8 +94,8 @@ def segment_resection(
 
 def get_dataset(
         input_path,
-        tta_iterations,
-        interpolation,
+        tta_iterations=0,
+        interpolation='bspline',
         tolerance=0.1,
         mni_transform_path=None,
         ):
