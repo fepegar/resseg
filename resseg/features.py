@@ -76,7 +76,7 @@ def save_feature_maps(input_path, output_dir):
 
     downsampled = [image]
     for _ in range(2):
-        target = torch.Tensor(downsampled[-1].spacing) / 2
+        target = torch.Tensor(downsampled[-1].spacing) * 2
         target = tuple(target.tolist())
         transform = tio.Resample(target, image_interpolation='nearest')
         downsampled_image = transform(downsampled[-1])
@@ -86,7 +86,7 @@ def save_feature_maps(input_path, output_dir):
         affine = downsampled[level].affine
         for i, feature_map in enumerate(tqdm(features[0], leave=False)):
             features_image = tio.ScalarImage(
-                tensor=feature_map.unsqueeze(0).cpu(),
+                tensor=feature_map.unsqueeze(0).cpu().float(),
                 affine=affine,
             )
             name = f'{part}_level_{level}_layer_{conv_layer}_feature_{i}.nii.gz'
