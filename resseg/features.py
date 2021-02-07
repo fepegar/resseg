@@ -56,6 +56,7 @@ def get_activation(args):
 
 
 def save_feature_maps(input_path, output_dir):
+    torch.set_grad_enabled(False)
     output_dir = Path(output_dir).expanduser().absolute()
     output_dir.mkdir(exist_ok=True, parents=True)
     device = get_device()
@@ -69,7 +70,7 @@ def save_feature_maps(input_path, output_dir):
         hook = module.register_forward_hook(get_activation(args))
     preprocessed_subject = get_dataset(input_path)[0]
     image = preprocessed_subject[IMAGE_NAME]
-    inputs = image.data.unsqueeze(0)
+    inputs = image.data.unsqueeze(0).float().to(device)
     with torch.cuda.amp.autocast():
         model(inputs)
 
@@ -85,7 +86,7 @@ def save_feature_maps(input_path, output_dir):
         affine = downsampled[level].affine
         for i, feature_map in enumerate(tqdm(features[0], leave=False)):
             features_image = tio.ScalarImage(
-                tensor=feature_map.unsqueeze(0),
+                tensor=feature_map.unsqueeze(0).cpu(),
                 affine=affine,
             )
             name = f'{part}_level_{level}_layer_{conv_layer}_feature_{i}.nii.gz'
