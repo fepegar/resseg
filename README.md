@@ -15,6 +15,11 @@ pip install resseg
 
 ## Usage
 
+Below are two examples of cavity segmentation for tumor and epilepsy surgery. The epilepsy example includes registration to the [MNI space](https://www.lead-dbs.org/about-the-mni-spaces/).
+Both examples can be run online using Google Colab:
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fepegar/resseg/blob/master/RESSEG.ipynb)
+
 ### BITE
 
 Example using an image from the
