@@ -1,4 +1,4 @@
-dependencies = ['torch', 'torchvision', 'unet']
+dependencies = ['torch', 'unet']
 
 
 import sys

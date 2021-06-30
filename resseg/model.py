@@ -1,5 +1,7 @@
+from pathlib import Path
+
+import torch
 from unet import UNet
-from torchvision.models.utils import load_state_dict_from_url
 
 
 WEIGHTS_URL = 'https://github.com/fepegar/resseg/raw/master/self_semi_37-b571f7ba.pth'
@@ -24,9 +26,8 @@ def ressegnet(pretrained: bool = True, progress: bool = True):
         monte_carlo_dropout=0.5,
     )
     if pretrained:
-        state_dict = load_state_dict_from_url(
-            WEIGHTS_URL,
-            progress=progress,
-        )
+        repo_dir = Path(__file__).parent.parent
+        weights_path = repo_dir / 'self_semi_37-b571f7ba.pth'
+        state_dict = torch.load(weights_path)
         model.load_state_dict(state_dict)
     return model

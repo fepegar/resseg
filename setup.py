@@ -12,7 +12,6 @@ requirements = [
     'click',
     'torch>=1.6',
     'torchio',
-    'torchvision',
     'unet==0.7.7',
 ]
 
