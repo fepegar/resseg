@@ -36,7 +36,7 @@ resseg $BITE -o bite_seg.nii.gz
 
 Example using an image from the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1).
 Segmentation works best when images are in the MNI space, so `resseg` includes a tool
-for this purpose (requires [ANTsPy](https://antspyx.readthedocs.io/en/latest/?badge=latest)).
+for this purpose (requires [antspyx](https://antspyx.readthedocs.io/en/latest/?badge=latest)).
 
 ```shell
 pip install antspyx
