@@ -4,13 +4,17 @@ Automatic segmentation of postoperative brain resection cavities from magnetic r
 
 ## Installation
 
-It's recommended to use [`conda`](https://docs.conda.io/en/latest/miniconda.html) and [install your desired PyTorch version](https://pytorch.org/get-started/locally/) before
-installing `resseg`.
-A 6-GB GPU is large enough to segment an image in the MNI space.
+It's recommended to use [`conda`](https://docs.conda.io/en/latest/miniconda.html).
+
+A 6-GB GPU is large enough to segment an image in an MNI space of size 193 × 229 × 193.
 
 ```shell
-conda create -n resseg python=3.8 ipython -y && conda activate resseg  # recommended
+conda create -n resseg python=3.8 -y
+conda activate resseg
+pip install light-the-torch
+ltt install torch
 pip install resseg
+resseg --help
 ```
 
 ## Usage
