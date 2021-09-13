@@ -68,17 +68,25 @@ model_name = 'ressegnet'
 model = torch.hub.load(repo, model_name, pretrained=True)
 ```
 
+## Graphical user interface using 3D Slicer
+
+There is an experimental graphical user interface (GUI) built on top of [3D Slicer](https://www.slicer.org/).
+
+Visit [this repository](https://github.com/fepegar/SlicerParcellation#brain-resection-cavity-segmentation) for additional information and installation instructions.
+
+![Resseg Slicer](https://raw.githubusercontent.com/fepegar/SlicerParcellation/master/screenshots/cavity.gif)
+
 ## Credit
 
-If you use this library for your research, please cite our MICCAI 2020 paper:
+If you use this library for your research, please cite the following publications:
 
-[F. Pérez-García, R. Rodionov, A. Alim-Marvasti, R. Sparks, J. S. Duncan and S. Ourselin. *Simulation of Brain Resection for Cavity Segmentation Using Self-Supervised and Semi-Supervised Learning*](https://link.springer.com/chapter/10.1007%2F978-3-030-59716-0_12).
+[F. Pérez-García et al., 2020, *Simulation of Brain Resection for Cavity Segmentation Using Self-Supervised and Semi-Supervised Learning*](https://link.springer.com/chapter/10.1007%2F978-3-030-59716-0_12).
 
-[[Preprint on arXiv](https://arxiv.org/abs/2006.15693)]
+[F. Pérez-García et al., 2021, *A self-supervised learning strategy for postoperative brain cavity segmentation simulating resections*](https://link.springer.com/article/10.1007/s11548-021-02420-2).
 
-And the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1), which was used to train the model:
+If you use the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1), which was used to train the model, please cite the following publication:
 
-[Pérez-García, Fernando; Rodionov, Roman; Alim-Marvasti, Ali; Sparks, Rachel; Duncan, John; Ourselin, Sebastien (2020): *EPISURG: a dataset of postoperative magnetic resonance images (MRI) for quantitative analysis of resection neurosurgery for refractory epilepsy*. University College London. Dataset. https://doi.org/10.5522/04/9996158.v1](https://doi.org/10.5522/04/9996158.v1)
+[F. Pérez-García et al., 2020, *EPISURG: a dataset of postoperative magnetic resonance images (MRI) for quantitative analysis of resection neurosurgery for refractory epilepsy*. University College London. Dataset.](https://doi.org/10.5522/04/9996158.v1)
 
 ## See also
 
