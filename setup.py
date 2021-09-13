@@ -45,6 +45,6 @@ setup(
     packages=find_packages(include=['resseg', 'resseg.*']),
     test_suite='tests',
     url='https://github.com/fepegar/resseg',
-    version='0.3.6',
+    version='0.3.7',
     zip_safe=False,
 )
