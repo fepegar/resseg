@@ -76,6 +76,75 @@ Visit [this repository](https://github.com/fepegar/SlicerParcellation#brain-rese
 
 ![Resseg Slicer](https://raw.githubusercontent.com/fepegar/SlicerParcellation/master/screenshots/cavity.gif)
 
+## Plotting resected structures
+
+A quantitative analysis of the resected structures can be performed using a brain parcellation computed using [GIF](http://niftyweb.cs.ucl.ac.uk/program.php?p=GIF) (3.0) or [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FsTutorial/AnatomicalROI).
+
+```python
+from resseg.parcellation import GIFParcellation, FreeSurferParcellation
+parcellation_path = 't1_seg_gif.nii.gz'
+cavity_seg_on_preop_path = 'cavity_on_preop.nii.gz'
+parcellation = GIFParcellation(parcellation_path)
+```
+
+I used a sphere near the hippocampus to simulate the resection cavity segmentation, and the GIF parcellation in the [FPG dataset](https://torchio.readthedocs.io/datasets.html#fpg) of [TorchIO](https://torchio.readthedocs.io/).
+
+```python
+parcellation.print_percentage_of_resected_structures(cavity_seg_on_preop_path)
+```
+
+```
+Percentage of each resected structure:
+100% of Left vessel
+ 83% of Left Inf Lat Vent
+ 59% of Left Amygdala
+ 58% of Left Hippocampus
+ 26% of Left PIns posterior insula
+ 24% of Left PP planum polare
+ 21% of Left Basal Forebrain
+ 18% of Left Claustrum
+ 16% of Left PHG parahippocampal gyrus
+ 15% of Left Pallidum
+ 15% of Left Ent entorhinal area
+ 13% of Left FuG fusiform gyrus
+ 13% of Left Temporal White Matter
+ 11% of Left Putamen
+ 10% of Left Insula White Matter
+  5% of Left ITG inferior temporal gyrus
+  5% of Left periventricular white matter
+  5% of Left Ventral DC
+
+The resection volume is composed of:
+ 30% is Left Temporal White Matter
+ 12% is Left Hippocampus
+ 10% is Left Insula White Matter
+  7% is Left FuG fusiform gyrus
+  6% is Left Amygdala
+  4% is Left ITG inferior temporal gyrus
+  4% is Left PP planum polare
+  3% is Left Putamen
+  3% is Left Claustrum
+  3% is Left PIns posterior insula
+  3% is Left PHG parahippocampal gyrus
+  2% is [Unkown label: 4]
+  1% is Left Ent entorhinal area
+  1% is Left Pallidum
+  1% is Left Inf Lat Vent
+  1% is Left Ventral DC
+```
+
+```python
+parcellation.plot_bars(cavity_seg_on_preop_path)
+```
+
+![Bars](./screenshots/bars.png)
+
+```python
+parcellation.plot_pie(cavity_seg_on_preop_path)
+```
+
+![Pie](./screenshots/pie.png)
+
 ## Credit
 
 If you use this library for your research, please cite the following publications:

@@ -9,8 +9,8 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'click',
-    'torch>=1.6',
+    'matplotlib',
+    'pandas',
     'torchio',
     'unet==0.7.7',
 ]
