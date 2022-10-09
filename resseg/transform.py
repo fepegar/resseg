@@ -2,8 +2,8 @@ import numpy as np
 import nibabel as nib
 import torchio as tio
 
-from .constants import IMAGE_NAME
-from .constants import TO_MNI
+from constants import IMAGE_NAME
+from constants import TO_MNI
 
 
 def get_preprocessing_transform(

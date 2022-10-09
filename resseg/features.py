@@ -65,9 +65,8 @@ def save_feature_maps(input_path, output_dir):
     model = torch.hub.load(repo, model_name)
     model.to(device)
     model.eval()
-    hooks = []
     for args, module in get_all_modules(model):
-        hook = module.register_forward_hook(get_activation(args))
+        module.register_forward_hook(get_activation(args))
     preprocessed_subject = get_dataset(input_path)[0]
     image = preprocessed_subject[IMAGE_NAME]
     inputs = image.data.unsqueeze(0).float().to(device)
