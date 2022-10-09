@@ -20,8 +20,9 @@ def get_preprocessing_transform(
     mni_transform_path=None,
     interpolation='bspline',
     tolerance=0.1,
+    image_name=IMAGE_NAME,
 ):
-    hist_std = tio.HistogramStandardization({IMAGE_NAME: RESSEG_LANDMARKS})
+    hist_std = tio.HistogramStandardization({image_name: RESSEG_LANDMARKS})
     preprocess_transforms = [
         tio.ToCanonical(),
         hist_std,
