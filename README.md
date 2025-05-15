@@ -23,7 +23,7 @@ Example using an image from the
 [Brain Images of Tumors for Evaluation database (BITE)](http://nist.mni.mcgill.ca/?page_id=672).
 
 ```shell
-BITE=`resseg-download bite`
+BITE=$(resseg-download bite)
 resseg $BITE -o bite_seg.nii.gz
 ```
 
@@ -46,7 +46,7 @@ resseg $EPISURG -o episurg_seg.nii.gz -t episurg_to_mni.tfm
 
 ## Trained model
 
-The trained model can be used without installing `resseg`, but you'll need to install [`unet`](https://pypi.org/project/unet/) first:
+The trained model can be used without installing `resseg`, but you"ll need to install [`unet`](https://pypi.org/project/unet/) first:
 
 ```shell
 pip install unet
@@ -56,9 +56,9 @@ Then, in Python:
 
 ```python
 import torch
-repo = 'fepegar/resseg'
-model_name = 'ressegnet'
-model = torch.hub.load(repo, model_name, pretrained=True)
+repo = "fepegar/resseg"
+model_name = "ressegnet"
+model = torch.hub.load(repo, model_name, pretrained=True, trust_repo=True)
 ```
 
 ## Graphical user interface using 3D Slicer
@@ -75,8 +75,8 @@ A quantitative analysis of the resected structures can be performed using a brai
 
 ```python
 from resseg.parcellation import GIFParcellation
-parcellation_path = 't1_seg_gif.nii.gz'
-cavity_seg_on_preop_path = 'cavity_on_preop.nii.gz'
+parcellation_path = "t1_seg_gif.nii.gz"
+cavity_seg_on_preop_path = "cavity_on_preop.nii.gz"
 parcellation = GIFParcellation(parcellation_path)
 ```
 
