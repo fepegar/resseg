@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "resseg"
-version = "version = "0.3.7""
+version = "0.3.7"
 description = "Automatic segmentation of epilepsy neurosurgery resection cavity."
 readme = "README.md"
 authors = [
@@ -39,3 +39,18 @@ resseg = "resseg.cli.resseg:main"
 resseg-mni = "resseg.cli.resseg_mni:main"
 resseg-download = "resseg.cli.resseg_download:main"
 resseg-features = "resseg.cli.resseg_feature_maps:main"
+
+[dependency-groups]
+dev = [
+    "bump-my-version",
+]
+
+[[tool.bumpversion.files]]
+filename = "src/resseg/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
