@@ -2,9 +2,12 @@
 
 Automatic segmentation of postoperative brain resection cavities from magnetic resonance images (MRI) using a convolutional neural network (CNN) trained with [PyTorch](https://pytorch.org/).
 
-## Installation
+## Requirements
 
 A GPU with 6 GB of VRAM is large enough to segment an image in an MNI space of size 193 × 229 × 193.
+CPU segmentation is also possible, but it will be slower.
+
+## Installation
 
 ```shell
 pip install resseg
