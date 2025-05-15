@@ -7,16 +7,16 @@ from resseg.inference import segment_resection
 
 
 def resseg(
-        input_path,
-        output_path,
-        tta_iterations,
-        interpolation,
-        num_workers,
-        postprocess=True,
-        mni_transform_path=None,
-        ):
-    repo = 'fepegar/resseg'
-    model_name = 'ressegnet'
+    input_path,
+    output_path,
+    tta_iterations,
+    interpolation,
+    num_workers,
+    postprocess=True,
+    mni_transform_path=None,
+):
+    repo = "fepegar/resseg"
+    model_name = "ressegnet"
     model = torch.hub.load(repo, model_name)
     segment_resection(
         input_path,

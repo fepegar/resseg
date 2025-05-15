@@ -4,7 +4,6 @@
 """Tests for `resseg` package."""
 # TODO
 
-
 import unittest
 from click.testing import CliRunner
 

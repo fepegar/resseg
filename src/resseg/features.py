@@ -4,21 +4,21 @@ import torch
 import torchio as tio
 from tqdm import tqdm
 
+from .inference import IMAGE_NAME, get_dataset
 from .utils import get_device
-from .inference import get_dataset, IMAGE_NAME
 
 
 def get_module(model, part, level, conv_layer):
-    assert part in ('encoder', 'decoder')
+    assert part in ("encoder", "decoder")
     assert conv_layer in (0, 1)
-    if part == 'encoder':
+    if part == "encoder":
         assert level in (0, 1, 2)
         if level < 2:
             blocks = model.encoder.encoding_blocks
             conv_block = blocks[level]
         elif level == 2:
             conv_block = model.bottom_block
-    elif part == 'decoder':
+    elif part == "decoder":
         assert level in (0, 1)
         blocks = model.decoder.decoding_blocks
         conv_block = blocks[-1 - level]
@@ -30,7 +30,7 @@ def get_module(model, part, level, conv_layer):
 
 def get_all_modules(model):
     modules = []
-    for part in ('encoder', 'decoder'):
+    for part in ("encoder", "decoder"):
         for level in (0, 1, 2):
             for conv_layer in (0, 1):
                 try:
@@ -43,15 +43,20 @@ def get_all_modules(model):
 
 
 global activation
+
+
 def hook_fn(module, input, output):
     global activation
     activation = output
 
 
 activation = {}
+
+
 def get_activation(args):
     def hook(model, input, output):
         activation[args] = output.detach()
+
     return hook
 
 
@@ -60,25 +65,24 @@ def save_feature_maps(input_path, output_dir):
     output_dir = Path(output_dir).expanduser().absolute()
     output_dir.mkdir(exist_ok=True, parents=True)
     device = get_device()
-    repo = 'fepegar/resseg'
-    model_name = 'ressegnet'
-    model = torch.hub.load(repo, model_name)
+    repo = "fepegar/resseg"
+    model_name = "ressegnet"
+    model: torch.nn.Module = torch.hub.load(repo, model_name, trust_repo=True)
     model.to(device)
     model.eval()
-    hooks = []
     for args, module in get_all_modules(model):
-        hook = module.register_forward_hook(get_activation(args))
+        module.register_forward_hook(get_activation(args))
     preprocessed_subject = get_dataset(input_path)[0]
     image = preprocessed_subject[IMAGE_NAME]
     inputs = image.data.unsqueeze(0).float().to(device)
-    with torch.cuda.amp.autocast():
+    with torch.amp.autocast("cuda"):
         model(inputs)
 
     downsampled = [image]
     for _ in range(2):
         target = torch.Tensor(downsampled[-1].spacing) * 2
         target = tuple(target.tolist())
-        transform = tio.Resample(target, image_interpolation='nearest')
+        transform = tio.Resample(target, image_interpolation="nearest")
         downsampled_image = transform(downsampled[-1])
         downsampled.append(downsampled_image)
     for args, features in tqdm(activation.items()):
@@ -89,6 +93,6 @@ def save_feature_maps(input_path, output_dir):
                 tensor=feature_map.unsqueeze(0).cpu().float(),
                 affine=affine,
             )
-            name = f'{part}_level_{level}_layer_{conv_layer}_feature_{i}.nii.gz'
+            name = f"{part}_level_{level}_layer_{conv_layer}_feature_{i}.nii.gz"
             path = output_dir / name
             features_image.save(path)
