@@ -4,6 +4,7 @@ import nibabel as nib
 import numpy as np
 import torch
 import torchio as tio
+from torch.amp.autocast_mode import autocast
 from tqdm import tqdm
 
 from .utils import get_device
@@ -35,7 +36,7 @@ def segment_resection(
     device = get_device()
     model.to(device)
     model.eval()
-    torch.set_grad_enabled(False)
+
     loader = torch.utils.data.DataLoader(
         dataset,
         num_workers=num_workers,
@@ -45,12 +46,12 @@ def segment_resection(
     for subjects_list_batch in tqdm(loader, disable=not show_progress):
         tensors = [subject[IMAGE_NAME][tio.DATA] for subject in subjects_list_batch]
         inputs = torch.stack(tensors).float().to(device)
-        with torch.cuda.amp.autocast():
-            try:
-                probs = model(inputs).softmax(dim=1)[:, 1:].cpu()  # discard background
-            except Exception as e:
-                print(e)
-                raise
+        with autocast("cuda"):
+            with torch.inference_mode():
+                try:
+                    probs = model(inputs).softmax(dim=1)[:, 1:].cpu()
+                except Exception as e:
+                    raise RuntimeError("Error running inference") from e
         iterable = list(zip(subjects_list_batch, probs))
         for subject, prob in tqdm(iterable, leave=False, unit="subject"):
             subject.image.set_data(prob)
