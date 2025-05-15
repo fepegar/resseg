@@ -22,12 +22,16 @@ dependencies = [
     "matplotlib",
     "pandas",
     "torchio",
+    "tqdm",
     "unet",
 ]
 
 [project.optional-dependencies]
 csv = [
     "pandas>=1",
+]
+reg = [
+    "antspyx",
 ]
 
 [project.urls]
@@ -43,6 +47,8 @@ resseg-features = "resseg.cli.resseg_feature_maps:main"
 [dependency-groups]
 dev = [
     "bump-my-version",
+    "ipykernel",
+    "ipywidgets",
 ]
 
 [tool.bumpversion]
