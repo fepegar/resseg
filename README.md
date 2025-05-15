@@ -1,20 +1,13 @@
 # RESSEG
 
-Automatic segmentation of postoperative brain resection cavities from magnetic resonance images (MRI) using a convolutional neural network (CNN) trained with [PyTorch](https://pytorch.org/) 1.7.1.
+Automatic segmentation of postoperative brain resection cavities from magnetic resonance images (MRI) using a convolutional neural network (CNN) trained with [PyTorch](https://pytorch.org/).
 
 ## Installation
 
-It's recommended to use [`conda`](https://docs.conda.io/en/latest/miniconda.html).
-
-A 6-GB GPU is large enough to segment an image in an MNI space of size 193 × 229 × 193.
+A GPU with 6 GB of VRAM is large enough to segment an image in an MNI space of size 193 × 229 × 193.
 
 ```shell
-conda create -n resseg python=3.8 -y
-conda activate resseg
-pip install light-the-torch
-ltt install torch
 pip install resseg
-resseg --help
 ```
 
 ## Usage
@@ -40,7 +33,7 @@ resseg $BITE -o bite_seg.nii.gz
 
 Example using an image from the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1).
 Segmentation works best when images are in the MNI space, so `resseg` includes a tool
-for this purpose (requires [`antspyx](https://antspyx.readthedocs.io/en/latest/?badge=latest)).
+for this purpose (requires [`antspyx`](https://antspyx.readthedocs.io/en/latest/?badge=latest)).
 
 ```shell
 pip install antspyx
@@ -53,10 +46,10 @@ resseg $EPISURG -o episurg_seg.nii.gz -t episurg_to_mni.tfm
 
 ## Trained model
 
-The trained model can be used without installing `resseg`, but you'll need to install `unet` first:
+The trained model can be used without installing `resseg`, but you'll need to install [`unet`](https://pypi.org/project/unet/) first:
 
 ```shell
-pip install unet==0.7.7
+pip install unet
 ```
 
 Then, in Python:
@@ -81,7 +74,7 @@ Visit [this repository](https://github.com/fepegar/SlicerParcellation#brain-rese
 A quantitative analysis of the resected structures can be performed using a brain parcellation computed using [GIF](http://niftyweb.cs.ucl.ac.uk/program.php?p=GIF) (3.0) or [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FsTutorial/AnatomicalROI).
 
 ```python
-from resseg.parcellation import GIFParcellation, FreeSurferParcellation
+from resseg.parcellation import GIFParcellation
 parcellation_path = 't1_seg_gif.nii.gz'
 cavity_seg_on_preop_path = 'cavity_on_preop.nii.gz'
 parcellation = GIFParcellation(parcellation_path)
@@ -90,10 +83,7 @@ parcellation = GIFParcellation(parcellation_path)
 I used a sphere near the hippocampus to simulate the resection cavity segmentation, and the GIF parcellation in the [FPG dataset](https://torchio.readthedocs.io/datasets.html#fpg) of [TorchIO](https://torchio.readthedocs.io/).
 
 ```python
-parcellation.print_percentage_of_resected_structures(cavity_seg_on_preop_path)
-```
-
-```
+>>> parcellation.print_percentage_of_resected_structures(cavity_seg_on_preop_path)
 Percentage of each resected structure:
 100% of Left vessel
  83% of Left Inf Lat Vent
@@ -134,13 +124,13 @@ The resection volume is composed of:
 ```
 
 ```python
-parcellation.plot_bars(cavity_seg_on_preop_path)
+>>> parcellation.plot_bars(cavity_seg_on_preop_path)
 ```
 
 ![Bars](./screenshots/bars.png)
 
 ```python
-parcellation.plot_pie(cavity_seg_on_preop_path)
+>>> parcellation.plot_pie(cavity_seg_on_preop_path)
 ```
 
 ![Pie](./screenshots/pie.png)
@@ -160,4 +150,4 @@ If you use the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1), which w
 ## See also
 
 - [`resector`](https://github.com/fepegar/resector) was used to simulate brain resections during training
-- [TorchIO](http://torchio.rtfd.io/) was also used extensively. Both `resseg` and `resector` require this library.
+- [TorchIO](http://torchio.rtfd.io/) was also used extensively. Both `resseg` and `resector` require TorchIO.

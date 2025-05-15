@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "resseg"
+version = "0.3.7"
+description = "Automatic segmentation of epilepsy neurosurgery resection cavity."
+readme = "README.md"
+authors = [
+    {name = "Fernando Perez-Garcia", email = "fepegar@gmail.com"},
+]
+license = {text = "MIT license"}
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "matplotlib",
+    "pandas",
+    "torchio",
+    "unet",
+]
+
+[project.optional-dependencies]
+csv = [
+    "pandas>=1",
+]
+
+[project.urls]
+Homepage = "https://github.com/fepegar/resseg"
+Source = "https://github.com/fepegar/resseg"
+
+[project.scripts]
+resseg = "resseg.cli.resseg:main"
+resseg-mni = "resseg.cli.resseg_mni:main"
+resseg-download = "resseg.cli.resseg_download:main"
+resseg-features = "resseg.cli.resseg_feature_maps:main"
