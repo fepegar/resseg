@@ -1,14 +1,12 @@
-import warnings
 from pathlib import Path
 
-import torch
-import numpy as np
 import nibabel as nib
+import numpy as np
+import torch
 import torchio as tio
 from tqdm import tqdm
 
 from .utils import get_device
-
 
 IMAGE_NAME = "image"
 TO_MNI = "to_mni"
@@ -130,7 +128,8 @@ def get_dataset(
         hist_std,
         tio.ZNormalization(masking_method=tio.ZNormalization.mean),
     ]
-    zooms = nib.load(input_path).header.get_zooms()
+    nii: nib.nifti1.Nifti1Image = nib.loadsave.load(input_path)  # type: ignore[reportAssignmentType]
+    zooms = nii.header.get_zooms()
     pixdim = np.array(zooms)
     diff_to_1_iso = np.abs(pixdim - 1)
     if np.any(diff_to_1_iso > tolerance) or mni_transform_path is not None:
