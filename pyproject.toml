@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "resseg"
 version = "0.3.7"
-description = "Automatic segmentation of epilepsy neurosurgery resection cavity."
+description = "Automatic segmentation of postsurgical brain resection cavity."
 readme = "README.md"
 authors = [
     {name = "Fernando Perez-Garcia", email = "fepegar@gmail.com"},
