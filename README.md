@@ -140,15 +140,13 @@ The resection volume is composed of:
 
 ## Credit
 
-If you use this library for your research, please cite the following publications:
+If you use RESSEG, please cite the following publications:
 
-[F. Pérez-García et al., 2020, *Simulation of Brain Resection for Cavity Segmentation Using Self-Supervised and Semi-Supervised Learning*](https://link.springer.com/chapter/10.1007%2F978-3-030-59716-0_12).
+> [F. Pérez-García et al., 2020, *Simulation of Brain Resection for Cavity Segmentation Using Self-Supervised and Semi-Supervised Learning*](https://link.springer.com/chapter/10.1007%2F978-3-030-59716-0_12).
 
-[F. Pérez-García et al., 2021, *A self-supervised learning strategy for postoperative brain cavity segmentation simulating resections*](https://link.springer.com/article/10.1007/s11548-021-02420-2).
+> [F. Pérez-García et al., 2021, *A self-supervised learning strategy for postoperative brain cavity segmentation simulating resections*](https://link.springer.com/article/10.1007/s11548-021-02420-2).
 
-If you use the [EPISURG dataset](https://doi.org/10.5522/04/9996158.v1), which was used to train the model, please cite the following publication:
-
-[F. Pérez-García et al., 2020, *EPISURG: a dataset of postoperative magnetic resonance images (MRI) for quantitative analysis of resection neurosurgery for refractory epilepsy*. University College London. Dataset.](https://doi.org/10.5522/04/9996158.v1)
+> [F. Pérez-García et al., 2020, *EPISURG: a dataset of postoperative magnetic resonance images (MRI) for quantitative analysis of resection neurosurgery for refractory epilepsy*. University College London. Dataset.](https://doi.org/10.5522/04/9996158.v1)
 
 ## See also
 
