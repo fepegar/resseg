@@ -1,13 +1,14 @@
+import tempfile
 from pathlib import Path
 
+import requests
 import torch
 from unet import UNet
-
 
 WEIGHTS_URL = "https://github.com/fepegar/resseg/raw/master/self_semi_37-b571f7ba.pth"
 
 
-def ressegnet(pretrained: bool = True, progress: bool = True):
+def ressegnet(pretrained: bool = True) -> UNet:
     model = UNet(
         in_channels=1,
         out_classes=2,
@@ -26,8 +27,17 @@ def ressegnet(pretrained: bool = True, progress: bool = True):
         monte_carlo_dropout=0.5,
     )
     if pretrained:
-        repo_dir = Path(__file__).parent.parent
-        weights_path = repo_dir / "self_semi_37-b571f7ba.pth"
+        weights_path = _download_file(WEIGHTS_URL)
         state_dict = torch.load(weights_path)
         model.load_state_dict(state_dict)
     return model
+
+
+def _download_file(url: str) -> Path:
+    temp_dir = Path(tempfile.gettempdir())
+    path = temp_dir / "resseg_weights.pth"
+    if not path.exists():
+        response = requests.get(url)
+        with open(path, "wb") as f:
+            f.write(response.content)
+    return path

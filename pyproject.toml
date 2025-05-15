@@ -21,6 +21,7 @@ requires-python = ">=3.8"
 dependencies = [
     "matplotlib",
     "pandas",
+    "requests",
     "torchio",
     "tqdm",
     "unet",

@@ -1,16 +1,20 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-
+import nibabel as nib
+import numpy as np
+import pandas as pd
 
 color_tables_dir = Path(__file__).parent
 
 
-class Parcellation:
+class Parcellation(ABC):
+    color_table: ColorTable
+
     def __init__(self, parcellation_path):
         self.parcellation_path = Path(parcellation_path)
         self._label_map = None
@@ -18,7 +22,9 @@ class Parcellation:
     @property
     def label_map(self):
         if self._label_map is None:
-            label_map_nii = nib.load(self.parcellation_path)
+            label_map_nii: nib.nifti1.Nifti1Image = nib.loadsave.load(
+                self.parcellation_path,
+            )
             self._label_map = label_map_nii.get_data().astype(np.uint16)
         return self._label_map
 
@@ -52,7 +58,7 @@ class Parcellation:
         return list(zip(*structures))
 
     def get_resected_labels_and_counts(self, resection_seg_path):
-        mask_nii = nib.load(resection_seg_path)
+        mask_nii: nib.nifti1.Nifti1Image = nib.loadsave.load(resection_seg_path)
         mask = mask_nii.get_data() > 0
         masked_values = self.label_map[mask]
 
@@ -197,7 +203,9 @@ class FreeSurferParcellation(Parcellation):
         self.color_table = FreeSurferColorTable()
 
 
-class ColorTable:
+class ColorTable(ABC):
+    _data_frame: pd.DataFrame
+
     def __init__(self):
         self.fieldnames = (
             "structure",
@@ -207,7 +215,7 @@ class ColorTable:
             "alpha",
         )
 
-    def get_value_from_label_number(self, label_number, key):
+    def get_value_from_label_number(self, label_number, key: str):
         try:
             value = self._data_frame.loc[label_number][key]
         except KeyError:
@@ -240,6 +248,10 @@ class ColorTable:
     def is_valid_number(self, number):
         return number in self._data_frame.index
 
+    @abstractmethod
+    def read_color_table(self) -> pd.DataFrame:
+        pass
+
 
 class GIFColorTable(ColorTable):
     def __init__(self):
@@ -247,7 +259,7 @@ class GIFColorTable(ColorTable):
         self.color_table_path = color_tables_dir / "BrainAnatomyLabelsV3_0.txt"
         self._data_frame = self.read_color_table()
 
-    def read_color_table(self):
+    def read_color_table(self) -> pd.DataFrame:
         df = pd.read_csv(
             self.color_table_path,
             index_col=0,
@@ -263,7 +275,7 @@ class FreeSurferColorTable(ColorTable):
         self.color_table_path = color_tables_dir / "FreeSurferLabels.ctbl"
         self._data_frame = self.read_color_table()
 
-    def read_color_table(self):
+    def read_color_table(self) -> pd.DataFrame:
         df = pd.read_csv(
             self.color_table_path,
             index_col=0,
