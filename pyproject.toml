@@ -45,6 +45,11 @@ dev = [
     "bump-my-version",
 ]
 
+[tool.bumpversion]
+current_version = "0.3.7"
+commit = true
+tag = true
+
 [[tool.bumpversion.files]]
 filename = "src/resseg/__init__.py"
 search = '__version__ = "{current_version}"'
