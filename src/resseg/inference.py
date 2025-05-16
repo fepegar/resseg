@@ -15,16 +15,17 @@ FROM_MNI = "from_mni"
 
 
 def segment_resection(
-    input_path,
-    model,
-    output_path=None,
-    tta_iterations=0,
-    interpolation="bspline",
-    num_workers=0,
-    show_progress=True,
-    binarize=True,
-    postprocess=True,
-    mni_transform_path=None,
+    input_path: Path,
+    model: torch.nn.Module,
+    output_path: Path | None = None,
+    *,
+    tta_iterations: int = 0,
+    interpolation: str = "bspline",
+    num_workers: int = 0,
+    show_progress: bool = True,
+    binarize: bool = True,
+    postprocess: bool = True,
+    mni_transform_path: Path | None = None,
 ):
     dataset = get_dataset(
         input_path,
@@ -94,11 +95,11 @@ def segment_resection(
 
 
 def get_dataset(
-    input_path,
-    tta_iterations=0,
-    interpolation="bspline",
-    tolerance=0.1,
-    mni_transform_path=None,
+    input_path: Path,
+    tta_iterations: int = 0,
+    interpolation: str = "bspline",
+    tolerance: float = 0.1,
+    mni_transform_path: Path | None = None,
 ):
     if mni_transform_path is None:
         image = tio.ScalarImage(input_path)
@@ -137,8 +138,8 @@ def get_dataset(
         kwargs = {"image_interpolation": interpolation}
         if mni_transform_path is not None:
             kwargs["pre_affine_name"] = TO_MNI
-            kwargs["target"] = tio.datasets.Colin27().t1.path
-        resample_transform = tio.Resample(**kwargs)
+            kwargs["target"] = tio.datasets.Colin27().t1.path  # type: ignore[reportAttributeAccessIssue]
+        resample_transform = tio.Resample(**kwargs)  # type: ignore[reportArgumentType]
         preprocess_transforms.append(resample_transform)
     preprocess_transforms.append(tio.EnsureShapeMultiple(8, method="crop"))
     preprocess_transform = tio.Compose(preprocess_transforms)

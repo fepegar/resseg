@@ -1,23 +1,25 @@
-# -*- coding: utf-8 -*-
-
 """Main module."""
 
+from pathlib import Path
+
 import torch
+
 from resseg.inference import segment_resection
 
 
 def resseg(
-    input_path,
-    output_path,
-    tta_iterations,
-    interpolation,
-    num_workers,
-    postprocess=True,
-    mni_transform_path=None,
+    input_path: Path,
+    output_path: Path,
+    tta_iterations: int,
+    interpolation: str,
+    num_workers: int,
+    *,
+    postprocess: bool = True,
+    mni_transform_path: Path | None = None,
 ):
     repo = "fepegar/resseg"
     model_name = "ressegnet"
-    model = torch.hub.load(repo, model_name)
+    model: torch.nn.Module = torch.hub.load(repo, model_name, trust_repo=True)  # type: ignore[reportAssignmentType]
     segment_resection(
         input_path,
         model,

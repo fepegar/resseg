@@ -15,16 +15,15 @@ color_tables_dir = Path(__file__).parent
 class Parcellation(ABC):
     color_table: ColorTable
 
-    def __init__(self, parcellation_path):
+    def __init__(self, parcellation_path: str | Path):
         self.parcellation_path = Path(parcellation_path)
         self._label_map = None
 
     @property
-    def label_map(self):
+    def label_map(self) -> np.ndarray:
         if self._label_map is None:
-            label_map_nii: nib.nifti1.Nifti1Image = nib.loadsave.load(
-                self.parcellation_path,
-            )
+            label_map_nii: nib.nifti1.Nifti1Image
+            label_map_nii = nib.loadsave.load(self.parcellation_path)  # type: ignore[reportAssignmentType]
             self._label_map = label_map_nii.get_data().astype(np.uint16)
         return self._label_map
 
@@ -58,7 +57,8 @@ class Parcellation(ABC):
         return list(zip(*structures))
 
     def get_resected_labels_and_counts(self, resection_seg_path):
-        mask_nii: nib.nifti1.Nifti1Image = nib.loadsave.load(resection_seg_path)
+        mask_nii: nib.nifti1.Nifti1Image
+        mask_nii = nib.loadsave.load(resection_seg_path)  # type: ignore[reportAssignmentType]
         mask = mask_nii.get_data() > 0
         masked_values = self.label_map[mask]
 
@@ -67,7 +67,9 @@ class Parcellation(ABC):
         return resected_dict
 
     def print_percentage_of_resected_structures(
-        self, resection_seg_path, hide_zeros=True
+        self,
+        resection_seg_path,
+        hide_zeros=True,
     ):
         structures, voxels, ratios = self.get_resected_structures(resection_seg_path)
         sort_by_ratio = np.argsort(ratios)
@@ -104,7 +106,8 @@ class Parcellation(ABC):
         ignore=None,
     ):
         names, voxels, _ = self.get_resected_structures(
-            resection_seg_path, ignore=ignore
+            resection_seg_path,
+            ignore=ignore,
         )
         colors = [
             self.color_table.get_color_from_structure_name(name) for name in names
@@ -113,8 +116,8 @@ class Parcellation(ABC):
         sort_by_voxels = np.argsort(voxels)[::-1]  # descending order
         voxels = np.array(voxels)[sort_by_voxels]
         percentages = (voxels / voxels.sum()) * 100
-        names = np.array(names)[sort_by_voxels]
-        colors = np.array(colors)[sort_by_voxels]
+        names = np.array(names)[sort_by_voxels].tolist()
+        colors = np.array(colors)[sort_by_voxels].tolist()
 
         # Hide some values
         def my_autopct(pct):
@@ -151,12 +154,11 @@ class Parcellation(ABC):
         ignore=None,
     ):
         names, _, ratios = self.get_resected_structures(
-            resection_seg_path, ignore=ignore
+            resection_seg_path,
+            ignore=ignore,
         )
 
-        colors = [
-            self.color_table.get_color_from_structure_name(name) for name in names
-        ]
+        colors = [self.color_table.get_color_from_structure_name(n) for n in names]
         fig, ax = plt.subplots()
         sort_by_ratios = np.argsort(ratios)
         ratios = np.array(ratios)[sort_by_ratios]
